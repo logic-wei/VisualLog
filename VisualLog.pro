@@ -28,12 +28,14 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
     logviewer.cpp \
-    finder.cpp
+    finder.cpp \
+    highlighter.cpp
 
 HEADERS += \
         mainwindow.h \
     logviewer.h \
-    finder.h
+    finder.h \
+    highlighter.h
 
 FORMS +=
 

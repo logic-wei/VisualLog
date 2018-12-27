@@ -1,6 +1,7 @@
 #include "logviewer.h"
 
 LogViewer::LogViewer(QWidget *parent):
+    QObject(parent),
     mRootWidget(new QWidget(parent)),
     mRootLayout(new QGridLayout(mRootWidget)),
     mMainTabWidget(new QTabWidget(mRootWidget)),
@@ -43,15 +44,21 @@ void LogViewer::addViewport(QString title)
             this, &LogViewer::highlightCurrentLine);
 }
 
-void LogViewer::setHighlighter(QSyntaxHighlighter *highlighter)
+void LogViewer::setHighlighter(QSharedPointer<QSyntaxHighlighter> highlighter)
 {
+    Viewport *viewport;
     QPlainTextEdit *txtEdit;
     QTextDocument *txtDoc;
 
-    txtEdit = mViewportList->at(mCurrentIndex)->textEdit;
+    if (mCurrentIndex <= 0) return;
+
+    viewport = mViewportList->at(mCurrentIndex);
+    txtEdit = viewport->textEdit;
     txtDoc = txtEdit->document();
 
-    // todo
+    // remove older and set newer highlighter
+    viewport->highlighter = highlighter;
+    highlighter->setDocument(txtDoc);
 }
 
 void LogViewer::find(const QString &exp, const QTextDocument::FindFlags &options, bool regMode)

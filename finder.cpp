@@ -1,6 +1,7 @@
 #include "finder.h"
 
 Finder::Finder(QWidget *parent):
+    QObject(parent),
     mDockWidget(new QDockWidget("finder", parent)),
     mRootWidget(new QWidget(mDockWidget)),
     mMainLayout(new QHBoxLayout(mRootWidget)),

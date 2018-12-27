@@ -20,6 +20,7 @@
 #include <QTextBlockFormat>
 #include <QTextBlock>
 #include <QTextFormat>
+#include <QSharedPointer>
 
 
 class LogViewer : public QObject
@@ -29,12 +30,14 @@ class LogViewer : public QObject
 public:
     struct Viewport {
     public:
-        Viewport(QString title, QPlainTextEdit *textEdit) {
-            this->title = title;
-            this->textEdit = textEdit;
-        }
+        Viewport(QString title, QPlainTextEdit *textEdit):
+            title(title),
+            textEdit(textEdit),
+            highlighter(nullptr){}
+
         QString title;
         QPlainTextEdit *textEdit;
+        QSharedPointer<QSyntaxHighlighter> highlighter;
     };
 
     LogViewer(QWidget *parent);
@@ -42,7 +45,7 @@ public:
 
     QWidget *rootWidget();
     void addViewport(QString title = "default.txt");
-    void setHighlighter(QSyntaxHighlighter *highlighter);
+    void setHighlighter(QSharedPointer<QSyntaxHighlighter> highlighter);
 
 public slots:
     void find(const QString &exp, const QTextDocument::FindFlags &options, bool regMode);
