@@ -2,7 +2,7 @@
 
 LogViewer::LogViewer(QWidget *parent):
     QWidget(parent),
-    mRootLayout(new QGridLayout(this)),
+    mRootLayout(new QGridLayout()),
     mMainTabWidget(new QTabWidget(this)),
     mViewportList(new QVector<Viewport *>()),
     mCurrentIndex(0)

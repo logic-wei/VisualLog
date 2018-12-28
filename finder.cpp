@@ -3,7 +3,7 @@
 Finder::Finder(QWidget *parent):
     QDockWidget("finder", parent),
     mRootWidget(new QWidget(this)),
-    mMainLayout(new QHBoxLayout(mRootWidget)),
+    mMainLayout(new QHBoxLayout()),
     mRegModeBox(new QCheckBox("regular mode", mRootWidget)),
     mCaseSenseBox(new QCheckBox("case sensitively", mRootWidget)),
     mWholeWordBox(new QCheckBox("whole word", mRootWidget)),

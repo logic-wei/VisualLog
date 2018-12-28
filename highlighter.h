@@ -5,6 +5,13 @@
 #include <QSharedPointer>
 #include <QSyntaxHighlighter>
 #include <QDockWidget>
+#include <QPushButton>
+#include <QToolButton>
+#include <QPlainTextEdit>
+#include <QComboBox>
+#include <QHBoxLayout>
+#include <QLayout>
+#include <QVBoxLayout>
 
 
 class Highlighter : public QDockWidget
@@ -19,7 +26,23 @@ public:
 signals:
     void logHighlighterChanged();
 
-public slots:
+private:
+    void setupUi();
+
+private:
+    QWidget *mRootWidget;
+    QLayout *mMainLayout;
+    QLayout *mToolLayout;
+    QLayout *mControlLayout;
+
+    QComboBox       *mRegulationBox;
+    QToolButton     *mNewButton;
+    QToolButton     *mDelButton;
+    QToolButton     *mSaveButton;
+    QPlainTextEdit  *mTextEdit;
+    QToolButton     *mHighlightButton;
+    QPushButton     *mFindPreButton;
+    QPushButton     *mFindNxtButton;
 };
 
 #endif // HIGHLIGHTER_H

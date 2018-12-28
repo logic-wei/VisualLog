@@ -2,18 +2,29 @@
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    mLogViewer(new LogViewer(parent)),
-    mFinder(new Finder(parent))
+    mLogViewer(new LogViewer(this)),
+    mFinder(new Finder(this)),
+    mHighlighter(new Highlighter(this))
 {
-    setWindowTitle("VisualLog");
-    mLogViewer->addViewport();
-    setCentralWidget(mLogViewer);
-    addDockWidget(Qt::DockWidgetArea::BottomDockWidgetArea, mFinder);
-
-    connect(mFinder, &Finder::findTriggered, mLogViewer, &LogViewer::find);
+    setupUi();
 }
 
 MainWindow::~MainWindow()
 {
 
+}
+
+void MainWindow::setupUi()
+{
+    // MainWindow settings
+    setWindowTitle("VisualLog");
+    setCentralWidget(mLogViewer);
+    addDockWidget(Qt::DockWidgetArea::BottomDockWidgetArea, mFinder);
+    addDockWidget(Qt::DockWidgetArea::RightDockWidgetArea, mHighlighter);
+
+    // children settings
+    mLogViewer->addViewport();
+
+    // others
+    connect(mFinder, &Finder::findTriggered, mLogViewer, &LogViewer::find);
 }

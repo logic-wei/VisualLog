@@ -9,6 +9,7 @@
 
 #include "logviewer.h"
 #include "finder.h"
+#include "highlighter.h"
 
 
 namespace Ui {
@@ -24,8 +25,12 @@ public:
     ~MainWindow();
 
 private:
-    LogViewer *mLogViewer;
-    Finder *mFinder;
+    void setupUi();
+
+private:
+    LogViewer   *mLogViewer;
+    Finder      *mFinder;
+    Highlighter *mHighlighter;
 };
 
 #endif // MAINWINDOW_H
