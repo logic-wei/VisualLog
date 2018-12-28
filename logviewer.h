@@ -23,7 +23,7 @@
 #include <QSharedPointer>
 
 
-class LogViewer : public QObject
+class LogViewer : public QWidget
 {
     Q_OBJECT
 
@@ -43,7 +43,6 @@ public:
     LogViewer(QWidget *parent);
     virtual ~LogViewer();
 
-    QWidget *rootWidget();
     void addViewport(QString title = "default.txt");
     void setHighlighter(QSharedPointer<QSyntaxHighlighter> highlighter);
 
@@ -54,7 +53,6 @@ private slots:
     void highlightCurrentLine();
 
 private:
-    QWidget *mRootWidget;
     QLayout *mRootLayout;
     QTabWidget *mMainTabWidget;
     QVector<Viewport *> *mViewportList;

@@ -1,9 +1,8 @@
 #include "finder.h"
 
 Finder::Finder(QWidget *parent):
-    QObject(parent),
-    mDockWidget(new QDockWidget("finder", parent)),
-    mRootWidget(new QWidget(mDockWidget)),
+    QDockWidget("finder", parent),
+    mRootWidget(new QWidget(this)),
     mMainLayout(new QHBoxLayout(mRootWidget)),
     mRegModeBox(new QCheckBox("regular mode", mRootWidget)),
     mCaseSenseBox(new QCheckBox("case sensitively", mRootWidget)),
@@ -22,16 +21,11 @@ Finder::Finder(QWidget *parent):
 
     mRootWidget->setLayout(mMainLayout);
 
-    mDockWidget->setWidget(mRootWidget);
+    setWidget(mRootWidget);
 
     // setting
     connect(mFindButton, &QPushButton::clicked, this, &Finder::onFindButtonClicked);
     connect(mFindPreButton, &QPushButton::clicked, this, &Finder::onFindPreButtonClicked);
-}
-
-QDockWidget * Finder::dockWidget()
-{
-    return mDockWidget;
 }
 
 void Finder::onFindButtonClicked()

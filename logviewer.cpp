@@ -1,10 +1,9 @@
 #include "logviewer.h"
 
 LogViewer::LogViewer(QWidget *parent):
-    QObject(parent),
-    mRootWidget(new QWidget(parent)),
-    mRootLayout(new QGridLayout(mRootWidget)),
-    mMainTabWidget(new QTabWidget(mRootWidget)),
+    QWidget(parent),
+    mRootLayout(new QGridLayout(this)),
+    mMainTabWidget(new QTabWidget(this)),
     mViewportList(new QVector<Viewport *>()),
     mCurrentIndex(0)
 {
@@ -12,7 +11,9 @@ LogViewer::LogViewer(QWidget *parent):
     mMainTabWidget->setContentsMargins(QMargins());
     mRootLayout->addWidget(mMainTabWidget);
     mRootLayout->setContentsMargins(QMargins());
-    mRootWidget->setLayout(mRootLayout);
+    setLayout(mRootLayout);
+
+    mMainTabWidget->setTabsClosable(true);
 }
 
 LogViewer::~LogViewer()
@@ -24,16 +25,11 @@ LogViewer::~LogViewer()
     delete mViewportList;
 }
 
-QWidget *LogViewer::rootWidget()
-{
-    return mRootWidget;
-}
-
 void LogViewer::addViewport(QString title)
 {
     Viewport *viewport;
 
-    viewport = new Viewport(title, new QPlainTextEdit(mRootWidget));
+    viewport = new Viewport(title, new QPlainTextEdit(this));
 
     mViewportList->append(viewport);
     mMainTabWidget->addTab(viewport->textEdit, viewport->title);

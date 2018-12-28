@@ -4,14 +4,15 @@
 #include <QObject>
 #include <QSharedPointer>
 #include <QSyntaxHighlighter>
+#include <QDockWidget>
 
 
-class Highlighter : public QObject
+class Highlighter : public QDockWidget
 {
     Q_OBJECT
 
 public:
-    explicit Highlighter(QObject *parent = nullptr);
+    explicit Highlighter(QWidget *parent = nullptr);
 
     QSharedPointer<QSyntaxHighlighter> logHighlighter();
 

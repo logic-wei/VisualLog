@@ -7,8 +7,8 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     setWindowTitle("VisualLog");
     mLogViewer->addViewport();
-    setCentralWidget(mLogViewer->rootWidget());
-    addDockWidget(Qt::DockWidgetArea::BottomDockWidgetArea, mFinder->dockWidget());
+    setCentralWidget(mLogViewer);
+    addDockWidget(Qt::DockWidgetArea::BottomDockWidgetArea, mFinder);
 
     connect(mFinder, &Finder::findTriggered, mLogViewer, &LogViewer::find);
 }

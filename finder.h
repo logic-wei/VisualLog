@@ -15,14 +15,12 @@
 #include <QString>
 
 
-class Finder : public QObject
+class Finder : public QDockWidget
 {
     Q_OBJECT
 
 public:
     Finder(QWidget *parent);
-
-    QDockWidget *dockWidget();
 
 signals:
     void findTriggered(const QString &exp, const QTextDocument::FindFlags &options, bool regMode);
@@ -35,7 +33,6 @@ private:
     void onFindTriggered(bool backward);
 
 private:
-    QDockWidget *mDockWidget;
     QWidget *mRootWidget;
     QLayout *mMainLayout;
 
