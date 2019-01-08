@@ -6,6 +6,12 @@
 #include <QHBoxLayout>
 #include <QTextEdit>
 #include <QObject>
+#include <QAction>
+#include <QMenuBar>
+#include <QMenu>
+#include <QDebug>
+#include <QString>
+#include <QFileDialog>
 
 #include "logviewer.h"
 #include "finder.h"
@@ -26,6 +32,11 @@ public:
 
 private:
     void setupUi();
+
+private slots:
+    void onOpenClicked();
+    void onCloseClicked();
+    void onCloseAllClicked();
 
 private:
     LogViewer   *mLogViewer;

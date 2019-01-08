@@ -2,59 +2,27 @@
 
 LogViewer::LogViewer(QWidget *parent):
     QWidget(parent),
-    mRootLayout(new QGridLayout()),
+    mRootLayout(new QHBoxLayout(this)),
     mMainTabWidget(new QTabWidget(this)),
-    mViewportList(new QVector<Viewport *>()),
-    mCurrentIndex(0)
+    mViewportList()
 {
-    // set layout
-    mMainTabWidget->setContentsMargins(QMargins());
-    mRootLayout->addWidget(mMainTabWidget);
-    mRootLayout->setContentsMargins(QMargins());
-    setLayout(mRootLayout);
-
-    mMainTabWidget->setTabsClosable(true);
+    setupUi();
 }
 
 LogViewer::~LogViewer()
 {
-    foreach (Viewport *vp, *mViewportList) {
-        delete vp;
-        // QWidget can be delete by parent automatically
-    }
-    delete mViewportList;
+
 }
 
-void LogViewer::addViewport(QString title)
+void LogViewer::setupUi()
 {
-    Viewport *viewport;
+    mRootLayout->addWidget(mMainTabWidget);
 
-    viewport = new Viewport(title, new QPlainTextEdit(this));
+    // MainTabWidget
+    mMainTabWidget->setTabsClosable(true);
 
-    mViewportList->append(viewport);
-    mMainTabWidget->addTab(viewport->textEdit, viewport->title);
-
-    mCurrentIndex = mViewportList->length() - 1;
-
-    connect(viewport->textEdit, &QPlainTextEdit::cursorPositionChanged,
-            this, &LogViewer::highlightCurrentLine);
-}
-
-void LogViewer::setHighlighter(QSharedPointer<QSyntaxHighlighter> highlighter)
-{
-    Viewport *viewport;
-    QPlainTextEdit *txtEdit;
-    QTextDocument *txtDoc;
-
-    if (mCurrentIndex <= 0) return;
-
-    viewport = mViewportList->at(mCurrentIndex);
-    txtEdit = viewport->textEdit;
-    txtDoc = txtEdit->document();
-
-    // remove older and set newer highlighter
-    viewport->highlighter = highlighter;
-    highlighter->setDocument(txtDoc);
+    connect(mMainTabWidget, &QTabWidget::tabCloseRequested,
+            this, &LogViewer::close);
 }
 
 void LogViewer::find(const QString &exp, const QTextDocument::FindFlags &options, bool regMode)
@@ -64,7 +32,9 @@ void LogViewer::find(const QString &exp, const QTextDocument::FindFlags &options
     QTextCursor txtCurPre;
     QTextCursor txtCurNow;
 
-    txtEdit = mViewportList->at(mCurrentIndex)->textEdit;
+    if (mViewportList.length() <= 0) return;
+
+    txtEdit = mViewportList.at(mMainTabWidget->currentIndex());
     txtDoc = txtEdit->document();
     txtCurPre = txtEdit->textCursor();
 
@@ -85,6 +55,34 @@ void LogViewer::find(const QString &exp, const QTextDocument::FindFlags &options
     txtEdit->setTextCursor(txtCurNow);
 }
 
+void LogViewer::open(const QString &path)
+{
+    LogViewport *viewport = new LogViewport(path, mMainTabWidget);
+    mMainTabWidget->addTab(viewport, viewport->title());
+    mViewportList.append(viewport);
+}
+
+void LogViewer::close(int index)
+{
+    mMainTabWidget->removeTab(index);
+    mViewportList.at(index)->close();
+    mViewportList.removeAt(index);
+}
+
+void LogViewer::closeCurrent()
+{
+    if(mViewportList.length() <= 0) return;
+
+    close(mMainTabWidget->currentIndex());
+}
+
+void LogViewer::closeAll()
+{
+    for(int i = 0; i < mViewportList.length(); i += 1) {
+        closeCurrent();
+    }
+}
+
 void LogViewer::highlightCurrentLine()
 {
     QPlainTextEdit *txtEdit;
@@ -92,7 +90,9 @@ void LogViewer::highlightCurrentLine()
     QTextEdit::ExtraSelection exSelection;
     QTextCharFormat txtChrFmt;
 
-    txtEdit = mViewportList->at(mCurrentIndex)->textEdit;
+    if (mViewportList.length() <= 0) return;
+
+    txtEdit = mViewportList.at(mMainTabWidget->currentIndex());
 
     txtChrFmt.setBackground(QColor(230, 230, 255));
     exSelection.cursor = txtEdit->textCursor();
@@ -104,3 +104,59 @@ void LogViewer::highlightCurrentLine()
     txtEdit->setExtraSelections(exSelections);
 }
 
+void LogViewer::onLineFilterUpdate()
+{
+    updateContent();
+}
+
+void LogViewer::updateContent()
+{
+    if (mViewportList.length() <= 0) return;
+
+    if (mFilter.isNull()) {
+        displayRawLog();
+        return;
+    }
+
+    QPlainTextEdit *textEdit;
+    QByteArray byteLine;
+    QString line;
+    QBuffer *buffer;
+
+    textEdit = mViewportList.at(mMainTabWidget->currentIndex());
+    buffer = mViewportList.at(mMainTabWidget->currentIndex())->buffer().get();
+
+    textEdit->clear();
+
+    buffer->open(QIODevice::OpenModeFlag::ReadOnly);{
+        byteLine = buffer->readLine();
+        while (!byteLine.isNull()) {
+            line = QString(byteLine);
+
+            // handle every line
+            mFilter->onNextLine(line);
+            if (mFilter->visible()) {
+                textEdit->setCurrentCharFormat(mFilter->format());
+                textEdit->insertPlainText(line+"\n");
+            }
+
+            byteLine = buffer->readLine();
+        }
+    }buffer->close();
+}
+
+void LogViewer::setLineFilter(const QSharedPointer<AbstractLineFilter> &filter)
+{
+    mFilter = filter;
+
+    connect(mFilter.get(), &AbstractLineFilter::updated,
+            this, &LogViewer::onLineFilterUpdate);
+    updateContent();
+}
+
+void LogViewer::displayRawLog()
+{
+    if (mViewportList.length() <= 0) return;
+
+    mViewportList.at(mMainTabWidget->currentIndex())->showBuffer();
+}

@@ -6,7 +6,7 @@ Highlighter::Highlighter(QWidget *parent):
     mMainLayout(new QVBoxLayout()),
     mToolLayout(new QHBoxLayout()),
     mControlLayout(new QHBoxLayout()),
-    mRegulationBox(new QComboBox(mRootWidget)),
+    mRuleBox(new QComboBox(mRootWidget)),
     mNewButton(new QToolButton(mRootWidget)),
     mDelButton(new QToolButton(mRootWidget)),
     mSaveButton(new QToolButton(mRootWidget)),
@@ -16,12 +16,13 @@ Highlighter::Highlighter(QWidget *parent):
     mFindNxtButton(new QPushButton(mRootWidget))
 {
     setupUi();
+    mFilter = QSharedPointer<LogFilter>(new LogFilter());
 }
 
 void Highlighter::setupUi()
 {
     // widget setting
-    mRegulationBox->setEditable(true);
+    mRuleBox->setEditable(true);
     mNewButton->setText("+");
     mDelButton->setText("-");
     mSaveButton->setText("<<");
@@ -30,7 +31,7 @@ void Highlighter::setupUi()
     mFindNxtButton->setText("find next");
 
     // layout setting
-    mToolLayout->addWidget(mRegulationBox);
+    mToolLayout->addWidget(mRuleBox);
     mToolLayout->addWidget(mNewButton);
     mToolLayout->addWidget(mDelButton);
     mToolLayout->addWidget(mSaveButton);
@@ -46,4 +47,9 @@ void Highlighter::setupUi()
     // parent setting
     mRootWidget->setLayout(mMainLayout);
     setWidget(mRootWidget);
+}
+
+QSharedPointer<AbstractLineFilter> Highlighter::logHighlighter()
+{
+    return mFilter;
 }
