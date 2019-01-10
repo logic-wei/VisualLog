@@ -1,7 +1,7 @@
 #include "highlighter.h"
 
 Highlighter::Highlighter(QWidget *parent):
-    QDockWidget(parent),
+    QDockWidget("highlighter", parent),
     mRootWidget(new QWidget(parent)),
     mMainLayout(new QVBoxLayout()),
     mToolLayout(new QHBoxLayout()),
@@ -10,7 +10,7 @@ Highlighter::Highlighter(QWidget *parent):
     mNewButton(new QToolButton(mRootWidget)),
     mDelButton(new QToolButton(mRootWidget)),
     mSaveButton(new QToolButton(mRootWidget)),
-    mTextEdit(new QPlainTextEdit(mRootWidget)),
+    mJsonEdit(new JsonTextEdit(mRootWidget)),
     mHighlightButton(new QToolButton(mRootWidget)),
     mFindPreButton(new QPushButton(mRootWidget)),
     mFindNxtButton(new QPushButton(mRootWidget))
@@ -41,12 +41,20 @@ void Highlighter::setupUi()
     mControlLayout->addWidget(mFindNxtButton);
 
     mMainLayout->addItem(mToolLayout);
-    mMainLayout->addWidget(mTextEdit);
+    mMainLayout->addWidget(mJsonEdit);
     mMainLayout->addItem(mControlLayout);
 
     // parent setting
     mRootWidget->setLayout(mMainLayout);
     setWidget(mRootWidget);
+
+    setTabWidth(4);
+}
+
+void Highlighter::setTabWidth(int nspace)
+{
+    QFontMetrics metrics(mJsonEdit->font());
+    mJsonEdit->setTabStopDistance(nspace * metrics.width(' '));
 }
 
 QSharedPointer<AbstractLineFilter> Highlighter::logHighlighter()

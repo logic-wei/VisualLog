@@ -12,9 +12,12 @@
 #include <QHBoxLayout>
 #include <QLayout>
 #include <QVBoxLayout>
+#include <QFontMetrics>
 
-#include "abstractlinefilter.h"
+#include "../logviewer/abstractlinefilter.h"
 #include "logfilter.h"
+#include "jsonhighlighter.h"
+#include "jsontextedit.h"
 
 
 class Highlighter : public QDockWidget
@@ -25,7 +28,7 @@ public:
     explicit Highlighter(QWidget *parent = nullptr);
 
     QSharedPointer<AbstractLineFilter> logHighlighter();
-
+    void setTabWidth(int nspace);
 
 signals:
     void logHighlighterChanged();
@@ -44,13 +47,14 @@ private:
     QToolButton     *mNewButton;
     QToolButton     *mDelButton;
     QToolButton     *mSaveButton;
-    QPlainTextEdit  *mTextEdit;
+    JsonTextEdit    *mJsonEdit;
     QToolButton     *mHighlightButton;
     QPushButton     *mFindPreButton;
     QPushButton     *mFindNxtButton;
 
     //others
-    QSharedPointer<LogFilter> mFilter;
+    QSharedPointer<LogFilter>   mFilter;
+    JsonHighlighter             *mJsonHighlighter;
 };
 
 #endif // HIGHLIGHTER_H

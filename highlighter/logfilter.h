@@ -12,7 +12,7 @@
 #include <QBrush>
 #include <QDebug>
 
-#include "abstractlinefilter.h"
+#include "../logviewer/abstractlinefilter.h"
 
 
 class LogFilter : public AbstractLineFilter

@@ -27,20 +27,24 @@ CONFIG += c++11
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    logviewer.cpp \
-    finder.cpp \
-    highlighter.cpp \
-    logviewport.cpp \
-    logfilter.cpp
+    logviewer/logviewer.cpp \
+    finder/finder.cpp \
+    highlighter/highlighter.cpp \
+    logviewer/logviewport.cpp \
+    highlighter/logfilter.cpp \
+    highlighter/jsonhighlighter.cpp \
+    highlighter/jsontextedit.cpp
 
 HEADERS += \
         mainwindow.h \
-    logviewer.h \
-    finder.h \
-    highlighter.h \
-    abstractlinefilter.h \
-    logviewport.h \
-    logfilter.h
+    logviewer/logviewer.h \
+    finder/finder.h \
+    highlighter/highlighter.h \
+    logviewer/abstractlinefilter.h \
+    logviewer/logviewport.h \
+    highlighter/logfilter.h \
+    highlighter/jsonhighlighter.h \
+    highlighter/jsontextedit.h
 
 FORMS +=
 

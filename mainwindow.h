@@ -13,9 +13,9 @@
 #include <QString>
 #include <QFileDialog>
 
-#include "logviewer.h"
-#include "finder.h"
-#include "highlighter.h"
+#include "logviewer/logviewer.h"
+#include "finder/finder.h"
+#include "highlighter/highlighter.h"
 
 
 namespace Ui {
