@@ -13,7 +13,6 @@ void JsonHighlighter::initKeyWordsRules()
     mStringPattern = R"("[A-Za-z0-9_]*"|(?<=:)\s*".*")";
     mBoolPattern = R"(\b(true|false)\b)";
     mNumberPattern = R"(\b\d+\b)";
-    mCommentPattern = R"(//.*)";
 
     // init all the format
     mStringFormat.setForeground(QColor(0, 200, 0)); // green
@@ -25,14 +24,10 @@ void JsonHighlighter::initKeyWordsRules()
     mNumberFormat.setForeground(QColor(0, 0, 200)); // blue
     mNumberFormat.setBackground(QColor(255, 255, 255));
 
-    mCommentFormat.setForeground(QColor(150, 150, 150)); // gray
-    mCommentFormat.setBackground(QColor(255, 255, 255));
-
     // gather all the rules
     mKeyWordsRules.append(Rule(mStringPattern, mStringFormat));
     mKeyWordsRules.append(Rule(mBoolPattern, mBoolFormat));
     mKeyWordsRules.append(Rule(mNumberPattern, mNumberFormat));
-    mKeyWordsRules.append(Rule(mCommentPattern, mCommentFormat));
 }
 
 void JsonHighlighter::initSpecialRules()

@@ -51,12 +51,10 @@ private:
     QString         mStringPattern;
     QString         mBoolPattern;
     QString         mNumberPattern;
-    QString         mCommentPattern;
 
     QTextCharFormat mStringFormat;
     QTextCharFormat mBoolFormat;
     QTextCharFormat mNumberFormat;
-    QTextCharFormat mCommentFormat;
 
     // special rules:
     QRegularExpression  mColorPattern;
