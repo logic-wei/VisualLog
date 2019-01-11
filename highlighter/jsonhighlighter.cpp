@@ -10,7 +10,7 @@ JsonHighlighter::JsonHighlighter(QTextDocument *doc):
 void JsonHighlighter::initKeyWordsRules()
 {
     // init all the pattern
-    mStringPattern = R"(".*")";
+    mStringPattern = R"("[A-Za-z0-9_]*"|(?<=:)\s*".*")";
     mBoolPattern = R"(\b(true|false)\b)";
     mNumberPattern = R"(\b\d+\b)";
     mCommentPattern = R"(//.*)";
