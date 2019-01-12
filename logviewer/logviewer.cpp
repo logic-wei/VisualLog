@@ -137,7 +137,7 @@ void LogViewer::updateContent()
             mFilter->onNextLine(line);
             if (mFilter->visible()) {
                 textEdit->setCurrentCharFormat(mFilter->format());
-                textEdit->insertPlainText(line+"\n");
+                textEdit->insertPlainText(line);
             }
 
             byteLine = buffer->readLine();

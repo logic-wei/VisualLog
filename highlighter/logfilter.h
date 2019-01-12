@@ -25,10 +25,13 @@ public:
         Rule() {}
         Rule(QString pattern, bool visible, QColor foreground, QColor background):
             pattern(pattern),
-            visible(visible)
-        {
+            visible(visible) {
             format.setForeground(QBrush(foreground));
             format.setBackground(QBrush(background));
+        }
+
+        Rule(bool visible, QColor foreground, QColor background) {
+            Rule("", visible, foreground, background);
         }
 
         QRegularExpression  pattern;
