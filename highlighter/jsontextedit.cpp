@@ -5,6 +5,9 @@ JsonTextEdit::JsonTextEdit(QWidget *parent):
 {
     new JsonHighlighter(document());
     mSpacePattern = QRegularExpression(R"(^\s*)");
+
+    connect(this, &QPlainTextEdit::textChanged,
+            this, &JsonTextEdit::updateJsonObject);
 }
 
 void JsonTextEdit::keyPressEvent(QKeyEvent *event)
@@ -29,4 +32,26 @@ void JsonTextEdit::autoInsertSpace()
             insertPlainText(match.captured(0));
         }
     }
+}
+
+QJsonObject & JsonTextEdit::jsonObject()
+{
+    return mJsonObject;
+}
+
+void JsonTextEdit::updateJsonObject()
+{
+    QJsonDocument jsonDoc;
+
+    jsonDoc = QJsonDocument::fromJson(jsonString().toUtf8());
+
+    if (!jsonDoc.isNull()) {
+        mJsonObject = jsonDoc.object();
+        emit updated(mJsonObject);
+    }
+}
+
+QString JsonTextEdit::jsonString()
+{
+    return document()->toRawText().simplified();
 }
