@@ -33,7 +33,8 @@ SOURCES += \
     logviewer/logviewport.cpp \
     highlighter/logfilter.cpp \
     highlighter/jsonhighlighter.cpp \
-    highlighter/jsontextedit.cpp
+    highlighter/jsontextedit.cpp \
+    utils/logutil.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -44,7 +45,8 @@ HEADERS += \
     logviewer/logviewport.h \
     highlighter/logfilter.h \
     highlighter/jsonhighlighter.h \
-    highlighter/jsontextedit.h
+    highlighter/jsontextedit.h \
+    utils/logutil.h
 
 FORMS +=
 
