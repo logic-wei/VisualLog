@@ -1,8 +1,10 @@
-#include "mainwindow.h"
 #include <QApplication>
 #include <QDir>
 #include <QString>
-#include <utils/logutil.h>
+
+#include "mainwindow.h"
+#include "utils/logutil.h"
+#include "utils/config.h"
 
 const QString TAG = "main";
 
@@ -12,11 +14,11 @@ void checkHomePath()
     LogUtil::i(TAG, "init working directory");
     QDir wd = QDir::home();
 
-    if (!wd.exists(".VisualLog")) {
-        if (wd.mkdir(".VisualLog"))
-            wd.cd(".VisualLog");
+    if (!wd.exists(VLOG_CFG_HOME_NAME)) {
+        if (wd.mkdir(VLOG_CFG_HOME_NAME))
+            wd.cd(VLOG_CFG_HOME_NAME);
     } else {
-        wd.cd(".VisualLog");
+        wd.cd(VLOG_CFG_HOME_NAME);
     }
 
     if (QDir::setCurrent(wd.path())) {

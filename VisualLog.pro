@@ -46,7 +46,8 @@ HEADERS += \
     highlighter/logfilter.h \
     highlighter/jsonhighlighter.h \
     highlighter/jsontextedit.h \
-    utils/logutil.h
+    utils/logutil.h \
+    utils/config.h
 
 FORMS +=
 

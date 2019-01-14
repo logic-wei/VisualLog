@@ -8,13 +8,11 @@ LogFilter::LogFilter():
 
 void LogFilter::addRule(const Rule &rule)
 {
-    qDebug()<<"addRule";
     mRules.append(rule);
 }
 
 void LogFilter::clearRule()
 {
-    qDebug()<<"clearRule";
     mRules.clear();
 }
 
@@ -37,6 +35,5 @@ void LogFilter::onNextLine(const QString &line)
 
 void LogFilter::setDefaultRule(const Rule &rule)
 {
-    qDebug()<<"setDefaultRule";
     mDefaultRule = rule;
 }

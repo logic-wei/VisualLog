@@ -2,6 +2,7 @@
 
 Highlighter::Highlighter(QWidget *parent):
     QDockWidget("highlighter", parent),
+    TAG("Highlighter"),
     mRootWidget(new QWidget(parent)),
     mMainLayout(new QVBoxLayout()),
     mToolLayout(new QHBoxLayout()),
@@ -13,31 +14,36 @@ Highlighter::Highlighter(QWidget *parent):
     mJsonEdit(new JsonTextEdit(mRootWidget)),
     mHighlightButton(new QToolButton(mRootWidget)),
     mFindPreButton(new QPushButton(mRootWidget)),
-    mFindNxtButton(new QPushButton(mRootWidget))
+    mFindNxtButton(new QPushButton(mRootWidget)),
+    mFileSystemWatcher(new QFileSystemWatcher(this)),
+    mEditorState(BROWSING)
 {
     setupUi();
     mFilter = QSharedPointer<LogFilter>(new LogFilter());
     connect(mJsonEdit, &JsonTextEdit::updated, this, &Highlighter::onJsonObjectUpdated);
+    initDir();
+    initFSWatcher();
+    onRulesDirChanged();
 }
 
 void Highlighter::setupUi()
 {
     // widget setting
-    mRuleBox->setEditable(true);
     mNewButton->setText("+");
     mDelButton->setText("-");
     mSaveButton->setText("<<");
     mHighlightButton->setText("H");
     mFindPreButton->setText("find pre");
     mFindNxtButton->setText("find next");
+    mRuleBox->setDuplicatesEnabled(false);
 
     // layout setting
     mToolLayout->addWidget(mRuleBox);
     mToolLayout->addWidget(mNewButton);
     mToolLayout->addWidget(mDelButton);
     mToolLayout->addWidget(mSaveButton);
+    mToolLayout->addWidget(mHighlightButton);
 
-    mControlLayout->addWidget(mHighlightButton);
     mControlLayout->addWidget(mFindPreButton);
     mControlLayout->addWidget(mFindNxtButton);
 
@@ -50,6 +56,40 @@ void Highlighter::setupUi()
     setWidget(mRootWidget);
 
     setTabWidth(4);
+
+    connect(mNewButton, &QToolButton::clicked, this, &Highlighter::onNewButtonClicked);
+    connect(mDelButton, &QToolButton::clicked, this, &Highlighter::onDelButtonClicked);
+    connect(mSaveButton, &QToolButton::clicked, this, &Highlighter::onSaveButtonClicked);
+    connect(mRuleBox, &QComboBox::currentTextChanged, this, &Highlighter::onRuleSelectedChanged);
+    connect(mRuleBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &Highlighter::onRulesBoxIndexChanged);
+    connect(mHighlightButton, &QToolButton::clicked, this, &Highlighter::onHighlightButtonClicked);
+}
+
+void Highlighter::initDir()
+{
+    QDir dir = QDir::home();
+
+    if (dir.cd(VLOG_CFG_HOME_NAME)) {
+        if (!dir.exists(VLOG_CFG_HIGHLIGHTER_RULE_HOME)) {
+            if (!dir.mkdir(VLOG_CFG_HIGHLIGHTER_RULE_HOME))
+                LogUtil::e(TAG, "failed to mkdir for rules");
+        }
+        if (!dir.cd(VLOG_CFG_HIGHLIGHTER_RULE_HOME))
+            LogUtil::e(TAG, "failed to cd to rules");
+    } else {
+       LogUtil::e(TAG, "failed to cd to home");
+    }
+
+    mRulesDir = dir;
+}
+
+void Highlighter::initFSWatcher()
+{
+    LogUtil::i(TAG, "initFSWatcher: dir:"+mRulesDir.path());
+
+    mFileSystemWatcher->addPath(mRulesDir.path());
+    connect(mFileSystemWatcher, &QFileSystemWatcher::directoryChanged,
+            this, &Highlighter::onRulesDirChanged);
 }
 
 void Highlighter::setTabWidth(int nspace)
@@ -66,7 +106,7 @@ QSharedPointer<AbstractLineFilter> Highlighter::logHighlighter()
 void Highlighter::onJsonObjectUpdated(const QJsonObject &jsonObject)
 {
     mFilter->clearRule();
-    qDebug()<<"jsonUpdate";
+
     // traverse every rules
     foreach (const QString &ruleName, jsonObject.keys()) {
         QJsonValue value = jsonObject.value(ruleName);
@@ -140,4 +180,137 @@ bool Highlighter::isDoubleJsonArray(const QJsonArray &jsonArray)
             return false;
     }
     return true;
+}
+
+void Highlighter::onRulesDirChanged()
+{
+    LogUtil::i(TAG, QString("onRulesDirChanged.mEditorState=%1").arg(mEditorState));
+
+    switch (mEditorState) {
+    case EditorState::EDITING:
+        break;
+    case EditorState::BROWSING:
+        LogUtil::i(TAG, QString("clear rule item"));
+        mRuleBox->clear();
+        foreach (QDir dir, mRulesDir.entryList(QDir::Filter::Files, QDir::SortFlag::Name)) {
+            LogUtil::i(TAG, QString("add rule item:%1").arg(dir.dirName()));
+            mRuleBox->addItem(dir.dirName());
+        }
+        break;
+    }
+}
+
+void Highlighter::onNewButtonClicked()
+{
+    LogUtil::i(TAG, QString("onNewButtonClicked.mEditorState=%1").arg(mEditorState));
+
+    switch (mEditorState) {
+    case EditorState::EDITING:
+        break;
+    case EditorState::BROWSING:
+        mEditorState = EditorState::EDITING;
+        mRuleBox->setEditable(true);
+        mRuleBox->update();
+        mRuleBox->setEditText("NewRule");
+        mJsonEdit->clear();
+        break;
+    }
+}
+
+void Highlighter::onDelButtonClicked()
+{
+    LogUtil::i(TAG, QString("onDelButtonClicked.mEditorState=%1").arg(mEditorState));
+
+    switch (mEditorState) {
+    case EditorState::EDITING:
+        mEditorState = EditorState::BROWSING;
+        mJsonEdit->clear();
+        mRuleBox->removeItem(mRuleBox->currentIndex());
+        mRuleBox->setEditable(false);
+        mRuleBox->update();
+        break;
+    case EditorState::BROWSING:
+        if (!mRuleBox->currentText().isNull() && !mRulesDir.remove(mRuleBox->currentText()))
+            LogUtil::e(TAG, QString("failed to remove rule file:%1").arg(mRuleBox->currentText()));
+        break;
+    }
+}
+
+void Highlighter::onSaveButtonClicked()
+{
+    LogUtil::i(TAG, QString("onSaveButtonClicked.mEditorState=%1").arg(mEditorState));
+
+    switch (mEditorState) {
+    case EditorState::BROWSING:
+        saveAsRuleFile(mRuleBox->currentText(), mJsonEdit->document()->toRawText());
+        break;
+    case EditorState::EDITING:
+        if (!mRulesDir.exists(mRuleBox->currentText())) {
+            mEditorState = EditorState::BROWSING;
+            saveAsRuleFile(mRuleBox->currentText(), mJsonEdit->document()->toRawText());
+            mRuleBox->setEditable(false);
+            mRuleBox->update();
+        } else {
+            LogUtil::i(TAG, "reduplicative file name");
+            QMessageBox::warning(this, "error", "reduplicative file name");
+        }
+        break;
+    }
+}
+
+void Highlighter::onRuleSelectedChanged(const QString &rule)
+{
+    LogUtil::i(TAG, QString("onRuleSelectedChanged.mEditorState=%1").arg(mEditorState));
+
+    if (rule.isNull() || rule == "") return;
+
+    switch (mEditorState) {
+    case EditorState::BROWSING:
+        loadRuleFile(mRuleBox->currentText());
+        break;
+    case EditorState::EDITING:
+        break;
+    }
+}
+
+void Highlighter::loadRuleFile(const QString &fileName)
+{
+    LogUtil::i(TAG, QString("loadRuleFile.fileName=%1").arg(fileName));
+
+    if (fileName.isNull() || fileName == "") return;
+
+    QFile ruleFile(mRulesDir.absoluteFilePath(fileName));
+
+    ruleFile.open(QIODevice::OpenModeFlag::ReadOnly); {
+        mJsonEdit->clear();
+        mJsonEdit->insertPlainText(ruleFile.readAll());
+    } ruleFile.close();
+}
+
+void Highlighter::onRulesBoxIndexChanged(int index)
+{
+    (void)index;
+
+    switch (mEditorState) {
+    case EditorState::BROWSING:
+        break;
+    case EditorState::EDITING:
+        mEditorState = EditorState::BROWSING;
+        mJsonEdit->clear();
+        mRuleBox->setEditable(false);
+        break;
+    }
+}
+
+void Highlighter::saveAsRuleFile(const QString &fileName, const QString &content)
+{
+    QFile ruleFile(mRulesDir.absoluteFilePath(fileName));
+    ruleFile.open(QIODevice::OpenModeFlag::WriteOnly);
+    ruleFile.write(content.toUtf8());
+    ruleFile.close();
+}
+
+void Highlighter::onHighlightButtonClicked()
+{
+    LogUtil::i(TAG, "onHighlightButtonClicked");
 }

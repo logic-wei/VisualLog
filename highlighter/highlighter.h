@@ -20,11 +20,19 @@
 #include <QString>
 #include <QRegularExpression>
 #include <QColor>
+#include <QFileSystemWatcher>
+#include <QDir>
+#include <QFile>
+#include <QMessageBox>
+#include <QShortcut>
+#include <QKeySequence>
 
 #include "../logviewer/abstractlinefilter.h"
 #include "logfilter.h"
 #include "jsonhighlighter.h"
 #include "jsontextedit.h"
+#include "utils/config.h"
+#include "utils/logutil.h"
 
 
 class Highlighter : public QDockWidget
@@ -32,6 +40,11 @@ class Highlighter : public QDockWidget
     Q_OBJECT
 
 public:
+    enum EditorState {
+        BROWSING = 0,
+        EDITING
+    };
+
     explicit Highlighter(QWidget *parent = nullptr);
 
     QSharedPointer<AbstractLineFilter> logHighlighter();
@@ -42,14 +55,26 @@ signals:
 
 private slots:
     void onJsonObjectUpdated(const QJsonObject &jsonObject);
+    void onRulesDirChanged();
+    void onNewButtonClicked();
+    void onDelButtonClicked();
+    void onSaveButtonClicked();
+    void onRuleSelectedChanged(const QString &rule);
+    void onRulesBoxIndexChanged(int index);
+    void onHighlightButtonClicked();
 
 private:
     void setupUi();
+    void initDir();
+    void initFSWatcher();
     void updateFilterRule(LogFilter::Rule *filterRule,
                         const QString &propName, const QJsonValue &propValue);
     bool isDoubleJsonArray(const QJsonArray &jsonArray);
+    void loadRuleFile(const QString &fileName);
+    void saveAsRuleFile(const QString &fileName, const QString &content);
 
 private:
+    const QString TAG;
     // ui
     QWidget *mRootWidget;
     QLayout *mMainLayout;
@@ -68,6 +93,9 @@ private:
     //others
     QSharedPointer<LogFilter>   mFilter;
     JsonHighlighter             *mJsonHighlighter;
+    QFileSystemWatcher          *mFileSystemWatcher;
+    QDir                        mRulesDir;
+    EditorState                 mEditorState;
 };
 
 #endif // HIGHLIGHTER_H

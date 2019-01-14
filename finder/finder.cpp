@@ -47,7 +47,6 @@ void Finder::onFindTriggered(bool backward)
     options.setFlag(QTextDocument::FindFlag::FindCaseSensitively, mCaseSenseBox->isChecked());
 
     emit findTriggered(mExpressionEdit->text(), options, mRegModeBox->isChecked());
-
 }
 
 
