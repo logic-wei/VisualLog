@@ -28,6 +28,7 @@ Finder::Finder(QWidget *parent):
     connect(mFindButton, &QPushButton::clicked, this, &Finder::onFindButtonClicked);
     connect(mFindPreButton, &QPushButton::clicked, this, &Finder::onFindPreButtonClicked);
     connect(mExpressionEdit, &QLineEdit::editingFinished, this, &Finder::onFindButtonClicked);
+    connect(this, &QDockWidget::visibilityChanged, this, &Finder::onVisibilityChanged);
 }
 
 Finder::~Finder()
@@ -53,6 +54,13 @@ void Finder::onFindTriggered(bool backward)
     options.setFlag(QTextDocument::FindFlag::FindCaseSensitively, mCaseSenseBox->isChecked());
 
     emit findTriggered(mExpressionEdit->text(), options, mRegModeBox->isChecked());
+}
+
+void Finder::onVisibilityChanged(bool visible)
+{
+    if (visible) {
+        mExpressionEdit->setFocus();
+    }
 }
 
 

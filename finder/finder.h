@@ -31,6 +31,7 @@ signals:
 private slots:
     void onFindButtonClicked();
     void onFindPreButtonClicked();
+    void onVisibilityChanged(bool visible);
 
 private:
     void onFindTriggered(bool backward);
