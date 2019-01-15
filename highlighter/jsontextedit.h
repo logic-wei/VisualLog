@@ -26,9 +26,11 @@ public:
 
     QString jsonString();
     QJsonObject & jsonObject();
+    void setTabWidth(int nspace);
 
 signals:
     void updated(const QJsonObject &json);
+    void edittingCompleted();
 
 protected:
     virtual void keyPressEvent(QKeyEvent *event);

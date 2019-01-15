@@ -37,3 +37,19 @@ void LogFilter::setDefaultRule(const Rule &rule)
 {
     mDefaultRule = rule;
 }
+
+QString LogFilter::comboVisiblePattern()
+{
+    QString comboPattern;
+
+    foreach (Rule rule, mRules) {
+        if (rule.visible) {
+            if (!comboPattern.isNull() && comboPattern != "")
+                comboPattern.append("|");
+            comboPattern.append(rule.pattern.pattern());
+        }
+    }
+
+    return comboPattern;
+}
+

@@ -2,6 +2,7 @@
 
 Finder::Finder(QWidget *parent):
     QDockWidget("finder", parent),
+    TAG("Finder"),
     mRootWidget(new QWidget(this)),
     mMainLayout(new QHBoxLayout()),
     mRegModeBox(new QCheckBox("regular mode", mRootWidget)),
@@ -26,6 +27,11 @@ Finder::Finder(QWidget *parent):
     // setting
     connect(mFindButton, &QPushButton::clicked, this, &Finder::onFindButtonClicked);
     connect(mFindPreButton, &QPushButton::clicked, this, &Finder::onFindPreButtonClicked);
+    connect(mExpressionEdit, &QLineEdit::editingFinished, this, &Finder::onFindButtonClicked);
+}
+
+Finder::~Finder()
+{
 }
 
 void Finder::onFindButtonClicked()

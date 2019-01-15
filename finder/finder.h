@@ -14,6 +14,8 @@
 #include <QFlags>
 #include <QString>
 
+#include "utils/logutil.h"
+
 
 class Finder : public QDockWidget
 {
@@ -21,6 +23,7 @@ class Finder : public QDockWidget
 
 public:
     Finder(QWidget *parent);
+    ~Finder();
 
 signals:
     void findTriggered(const QString &exp, const QTextDocument::FindFlags &options, bool regMode);
@@ -33,13 +36,15 @@ private:
     void onFindTriggered(bool backward);
 
 private:
-    QWidget *mRootWidget;
-    QLayout *mMainLayout;
+    const QString TAG;
 
-    QCheckBox *mRegModeBox;
-    QCheckBox *mCaseSenseBox;
-    QCheckBox *mWholeWordBox;
-    QLineEdit *mExpressionEdit;
+    QWidget     *mRootWidget;
+    QLayout     *mMainLayout;
+
+    QCheckBox   *mRegModeBox;
+    QCheckBox   *mCaseSenseBox;
+    QCheckBox   *mWholeWordBox;
+    QLineEdit   *mExpressionEdit;
     QPushButton *mFindButton;
     QPushButton *mFindPreButton;
 

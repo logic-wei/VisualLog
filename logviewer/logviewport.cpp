@@ -6,6 +6,7 @@ LogViewport::LogViewport(const QString &path, QWidget *parent):
     mByteBuffer(nullptr)
 {
     loadFile(mPath);
+    connect(this, &QPlainTextEdit::cursorPositionChanged, this, &LogViewport::highlightCurrentLine);
 }
 
 void LogViewport::setTitle(const QString &title)
@@ -39,5 +40,22 @@ QSharedPointer<QBuffer> & LogViewport::buffer()
 void LogViewport::showBuffer()
 {
     clear();
-    insertPlainText(QString(mByteBuffer));
+    setPlainText(QString(mByteBuffer));
+}
+
+void LogViewport::highlightCurrentLine()
+{
+    QPlainTextEdit *txtEdit = this;
+    QList<QTextEdit::ExtraSelection> exSelections;
+    QTextEdit::ExtraSelection exSelection;
+    QTextCharFormat txtChrFmt;
+
+    txtChrFmt.setBackground(QColor(230, 230, 255));
+    exSelection.cursor = txtEdit->textCursor();
+    exSelection.format = txtChrFmt;
+    exSelection.cursor.clearSelection();
+    exSelection.format.setProperty(QTextFormat::FullWidthSelection, true);
+    exSelections << exSelection;
+
+    txtEdit->setExtraSelections(exSelections);
 }

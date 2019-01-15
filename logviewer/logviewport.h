@@ -45,6 +45,9 @@ public:
 signals:
     void titleChanged(const QString & title);
 
+private slots:
+    void highlightCurrentLine();
+
 private:
     // ui
     QString mTitle;

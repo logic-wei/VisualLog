@@ -6,6 +6,9 @@ JsonTextEdit::JsonTextEdit(QWidget *parent):
     new JsonHighlighter(document());
     mSpacePattern = QRegularExpression(R"(^\s*)");
 
+    setTabWidth(2);
+    setMinimumWidth(300);
+
     connect(this, &QPlainTextEdit::textChanged,
             this, &JsonTextEdit::updateJsonObject);
 }
@@ -16,6 +19,9 @@ void JsonTextEdit::keyPressEvent(QKeyEvent *event)
 
     switch (event->key()) {
         case Qt::Key::Key_Return:
+        if (event->modifiers() == Qt::KeyboardModifier::ControlModifier)
+            emit edittingCompleted();
+        else
             autoInsertSpace();
         break;
     }
@@ -48,10 +54,19 @@ void JsonTextEdit::updateJsonObject()
     if (!jsonDoc.isNull()) {
         mJsonObject = jsonDoc.object();
         emit updated(mJsonObject);
+    } else {
+        mJsonObject = QJsonObject();
+        emit updated(mJsonObject);
     }
 }
 
 QString JsonTextEdit::jsonString()
 {
     return document()->toRawText().simplified();
+}
+
+void JsonTextEdit::setTabWidth(int nspace)
+{
+    QFontMetrics metrics(font());
+    setTabStopDistance(nspace * metrics.width('a'));
 }

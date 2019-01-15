@@ -20,6 +20,7 @@ Highlighter::Highlighter(QWidget *parent):
 {
     setupUi();
     mFilter = QSharedPointer<LogFilter>(new LogFilter());
+    emit logFilterChanged(mFilter);
     connect(mJsonEdit, &JsonTextEdit::updated, this, &Highlighter::onJsonObjectUpdated);
     initDir();
     initFSWatcher();
@@ -55,14 +56,15 @@ void Highlighter::setupUi()
     mRootWidget->setLayout(mMainLayout);
     setWidget(mRootWidget);
 
-    setTabWidth(4);
-
     connect(mNewButton, &QToolButton::clicked, this, &Highlighter::onNewButtonClicked);
     connect(mDelButton, &QToolButton::clicked, this, &Highlighter::onDelButtonClicked);
     connect(mSaveButton, &QToolButton::clicked, this, &Highlighter::onSaveButtonClicked);
     connect(mRuleBox, &QComboBox::currentTextChanged, this, &Highlighter::onRuleSelectedChanged);
     connect(mRuleBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &Highlighter::onRulesBoxIndexChanged);
     connect(mHighlightButton, &QToolButton::clicked, this, &Highlighter::onHighlightButtonClicked);
+    connect(mJsonEdit, &JsonTextEdit::edittingCompleted, this, &Highlighter::onJsonEdittingCompleted);
+    connect(mFindNxtButton, &QPushButton::clicked, this, &Highlighter::onFindNexClicked);
+    connect(mFindPreButton, &QPushButton::clicked, this, &Highlighter::onFindPreClicked);
 }
 
 void Highlighter::initDir()
@@ -92,12 +94,6 @@ void Highlighter::initFSWatcher()
             this, &Highlighter::onRulesDirChanged);
 }
 
-void Highlighter::setTabWidth(int nspace)
-{
-    QFontMetrics metrics(mJsonEdit->font());
-    mJsonEdit->setTabStopDistance(nspace * metrics.width(' '));
-}
-
 QSharedPointer<AbstractLineFilter> Highlighter::logHighlighter()
 {
     return mFilter;
@@ -106,6 +102,12 @@ QSharedPointer<AbstractLineFilter> Highlighter::logHighlighter()
 void Highlighter::onJsonObjectUpdated(const QJsonObject &jsonObject)
 {
     mFilter->clearRule();
+
+    if (jsonObject.isEmpty()) {
+        LogUtil::i(TAG, "empty jsonObject");
+        mFilter->update();
+        return;
+    }
 
     // traverse every rules
     foreach (const QString &ruleName, jsonObject.keys()) {
@@ -313,4 +315,34 @@ void Highlighter::saveAsRuleFile(const QString &fileName, const QString &content
 void Highlighter::onHighlightButtonClicked()
 {
     LogUtil::i(TAG, "onHighlightButtonClicked");
+    emit logHighlighterTriggered();
+}
+
+void Highlighter::onJsonEdittingCompleted()
+{
+    LogUtil::i(TAG, "onJsonEdittingCompleted");
+    emit logHighlighterTriggered();
+}
+
+void Highlighter::onFindNexClicked()
+{
+    QString comboPattern = mFilter->comboVisiblePattern();
+
+    if (comboPattern.isNull()) return;
+
+    emit findTriggered(comboPattern,
+                       QTextDocument::FindFlag::FindCaseSensitively,
+                       true);
+}
+
+void Highlighter::onFindPreClicked()
+{
+    QString comboPattern = mFilter->comboVisiblePattern();
+
+    if (comboPattern.isNull()) return;
+
+    emit findTriggered(comboPattern,
+                       QTextDocument::FindFlag::FindCaseSensitively
+                       |QTextDocument::FindFlag::FindBackward,
+                       true);
 }

@@ -44,6 +44,7 @@ public:
     void addRule(const Rule &rule);
     void clearRule();
     void setDefaultRule(const Rule &rule);
+    QString comboVisiblePattern();
 
 protected:
     virtual void onNextLine(const QString &line);

@@ -12,6 +12,8 @@
 #include <QDebug>
 #include <QString>
 #include <QFileDialog>
+#include <QMessageBox>
+#include <QUrl>
 
 #include "logviewer/logviewer.h"
 #include "finder/finder.h"
@@ -37,6 +39,10 @@ private slots:
     void onOpenClicked();
     void onCloseClicked();
     void onCloseAllClicked();
+    void onAboutClicked();
+    void onAboutQtClicked();
+    void onFinderVisibleChanged(bool visible);
+    void onHighlighterVisibleChanged(bool visible);
 
 private:
     LogViewer   *mLogViewer;

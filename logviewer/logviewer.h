@@ -28,6 +28,7 @@
 
 #include "abstractlinefilter.h"
 #include "logviewport.h"
+#include "utils/logutil.h"
 
 
 class LogViewer : public QWidget
@@ -40,7 +41,7 @@ public:
 
     void setLineFilter(const QSharedPointer<AbstractLineFilter> &filter);
     void updateContent();
-    void displayRawLog();
+    void displayRawLog(int index);
 
 public slots:
     void open(const QString &path);
@@ -48,6 +49,7 @@ public slots:
     void closeCurrent();
     void closeAll();
     void find(const QString &exp, const QTextDocument::FindFlags &options, bool regMode);
+    void onLineFilterTriggered();
 
 private slots:
     void highlightCurrentLine();
@@ -57,9 +59,10 @@ private:
     void setupUi();
 
 private:
-    QLayout                             *mRootLayout;
-    QTabWidget                          *mMainTabWidget;
-    QList<LogViewport *>                mViewportList;
+    const QString           TAG;
+    QLayout                 *mRootLayout;
+    QTabWidget              *mMainTabWidget;
+    QList<LogViewport *>    mViewportList;
 
     QSharedPointer<AbstractLineFilter>  mFilter;
 };

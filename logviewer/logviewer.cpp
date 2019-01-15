@@ -2,6 +2,7 @@
 
 LogViewer::LogViewer(QWidget *parent):
     QWidget(parent),
+    TAG("LogViewer"),
     mRootLayout(new QHBoxLayout(this)),
     mMainTabWidget(new QTabWidget(this)),
     mViewportList()
@@ -20,6 +21,7 @@ void LogViewer::setupUi()
 
     // MainTabWidget
     mMainTabWidget->setTabsClosable(true);
+    mMainTabWidget->setMovable(true);
 
     connect(mMainTabWidget, &QTabWidget::tabCloseRequested,
             this, &LogViewer::close);
@@ -58,6 +60,7 @@ void LogViewer::find(const QString &exp, const QTextDocument::FindFlags &options
 void LogViewer::open(const QString &path)
 {
     LogViewport *viewport = new LogViewport(path, mMainTabWidget);
+    viewport->showBuffer();
     mMainTabWidget->addTab(viewport, viewport->title());
     mViewportList.append(viewport);
 }
@@ -106,15 +109,17 @@ void LogViewer::highlightCurrentLine()
 
 void LogViewer::onLineFilterUpdate()
 {
-    updateContent();
+    //updateContent();
 }
 
 void LogViewer::updateContent()
 {
+    LogUtil::i(TAG, QString("updateContent"));
+
     if (mViewportList.length() <= 0) return;
 
     if (mFilter.isNull()) {
-        displayRawLog();
+        displayRawLog(mMainTabWidget->currentIndex());
         return;
     }
 
@@ -147,6 +152,8 @@ void LogViewer::updateContent()
 
 void LogViewer::setLineFilter(const QSharedPointer<AbstractLineFilter> &filter)
 {
+    if (mFilter.get() == filter) return;
+
     mFilter = filter;
 
     connect(mFilter.get(), &AbstractLineFilter::updated,
@@ -154,9 +161,16 @@ void LogViewer::setLineFilter(const QSharedPointer<AbstractLineFilter> &filter)
     updateContent();
 }
 
-void LogViewer::displayRawLog()
+void LogViewer::displayRawLog(int index)
 {
+    LogUtil::i(TAG, QString("displayRawLog.index=%1").arg(index));
+
     if (mViewportList.length() <= 0) return;
 
-    mViewportList.at(mMainTabWidget->currentIndex())->showBuffer();
+    mViewportList.at(index)->showBuffer();
+}
+
+void LogViewer::onLineFilterTriggered()
+{
+    updateContent();
 }

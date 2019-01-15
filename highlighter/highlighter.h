@@ -48,10 +48,11 @@ public:
     explicit Highlighter(QWidget *parent = nullptr);
 
     QSharedPointer<AbstractLineFilter> logHighlighter();
-    void setTabWidth(int nspace);
 
 signals:
-    void logHighlighterChanged();
+    void logFilterChanged(const QSharedPointer<AbstractLineFilter> &highlighter);
+    void logHighlighterTriggered();
+    void findTriggered(const QString &exp, const QTextDocument::FindFlags &options, bool regMode);
 
 private slots:
     void onJsonObjectUpdated(const QJsonObject &jsonObject);
@@ -62,6 +63,9 @@ private slots:
     void onRuleSelectedChanged(const QString &rule);
     void onRulesBoxIndexChanged(int index);
     void onHighlightButtonClicked();
+    void onJsonEdittingCompleted();
+    void onFindNexClicked();
+    void onFindPreClicked();
 
 private:
     void setupUi();
