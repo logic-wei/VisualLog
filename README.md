@@ -13,14 +13,14 @@ log分析工具
 ```txt
 {
 	"log规则1": {
-		"pattern": "[正则表达式]",
+		"pattern": "正则表达式",
 		"visible"： bool,
 		"foreground": [r, g, b],
 		"background": [r, g, b]
 	},
 
 	"log规则2": {
-		"pattern": "[正则表达式]",
+		"pattern": "正则表达式",
 		"visible"： bool,
 		"foreground": [r, g, b],
 		"background": [r, g, b]
