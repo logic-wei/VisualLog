@@ -37,6 +37,10 @@ log分析工具
 
 #### 举例
 
+- 设置可见性
+
+![设置可见性](./screenshots/visible_setting.gif)
+
 - 设置前景色
 
 ![设置前景色](./screenshots/foreground_setting.gif)
@@ -44,10 +48,6 @@ log分析工具
 - 设置背景色
 
 ![设置背景色](./screenshots/background_setting.gif)
-
-- 设置可见性
-
-![设置可见性](./screenshots/visible_setting.gif)
 
 ### 搜索器
 
