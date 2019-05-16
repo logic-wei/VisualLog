@@ -41,15 +41,15 @@ default | Default rule.It will be applied to the logs that can't match all the c
 
 #### UI
 
-- rule box
+- `rule box`
 rule manager
-- +
+- `+`
 create a new rule
-- -
+- `-`
 delete current rule
-- <<
+- `<<`
 save current rule
-- H
+- `H`
 apply current rule
 
 #### 快捷键
