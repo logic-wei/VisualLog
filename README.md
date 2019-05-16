@@ -34,8 +34,9 @@ example：
 }
 ```
 语法采用`[rule]:[properties]`的形式，其中`rule`分为普通规则和特殊规则，目前支持的特殊规则如下：
+
 rule | description
-- | -
+-|-
 default | Default rule.It will be applied to the logs that can't match all the command rules
 
 #### UI
