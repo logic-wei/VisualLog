@@ -8,8 +8,9 @@ log分析工具
 
 通过json编辑log的显示规则，高亮感兴趣的log或者去除不感兴趣的log.
 
-#### 语法：
+#### 语法
 
+example：
 ```txt
 {
 	"log规则1": {
@@ -24,9 +25,31 @@ log分析工具
 		"visible"： bool,
 		"foreground": [r, g, b],
 		"background": [r, g, b]
+	},
+	"default": {
+		"visible": bool,
+		"foreground": [r, g, b],
+		"background": [r, g, b] 
 	}
 }
 ```
+语法采用`[rule]:[properties]`的形式，其中`rule`分为普通规则和特殊规则，目前支持的特殊规则如下：
+rule | description
+- | -
+default | Default rule.It will be applied to the logs that can't match all the command rules
+
+#### UI
+
+- rule box
+rule manager
+- +
+create a new rule
+- -
+delete current rule
+- <<
+save current rule
+- H
+apply current rule
 
 #### 快捷键
 
