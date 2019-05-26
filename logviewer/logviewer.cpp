@@ -59,7 +59,7 @@ void LogViewer::find(const QString &exp, const QTextDocument::FindFlags &options
 
 void LogViewer::open(const QString &path)
 {
-    LogViewport *viewport = new LogViewport(path, mMainTabWidget);
+    LogViewport *viewport = new LogViewport(path);
     viewport->showBuffer();
     mMainTabWidget->addTab(viewport, viewport->title());
     mViewportList.append(viewport);
@@ -69,6 +69,7 @@ void LogViewer::close(int index)
 {
     mMainTabWidget->removeTab(index);
     mViewportList.at(index)->close();
+    delete mViewportList.at(index);
     mViewportList.removeAt(index);
 }
 
